@@ -282,15 +282,28 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
         }, 1000)
       }
 
+     var global_repeat_timer;
+     const key = 'zoweZluxEL'
+     var postMessageCount = 0
+     var message = { token: key, verb: 'intialize', message: 'none', zlux: window.location.href.split('/')[2].split(':') }
      function nextStepCallback(json) {
         var settings
+        var configuredDomainEjesWeb // = 'https://mvs60.phx.phoenixsoftware.com:59284'; // From default webContent or persistence data in Zowe files structure.
         console.log(`index10: nextStepCallback called!  json=${json}`)
+        var siteConfigURL = ZoweZLUX.iframe.pluginDef.basePlugin.webContent.ejesWeb.url;
+        var siteConfigPort = ZoweZLUX.iframe.pluginDef.basePlugin.webContent.ejesWeb.port;
+        console.log(`Index15: Defaults: URL=${siteConfigURL}, PORT=${siteConfigPort}`);
         try {
           settings = JSON.parse(json)
           console.log('index11: Converted object follows in console stream.')
           console.log(settings)
           if ( ! settings || ! settings.parameters || ! settings.parameters.index || ! settings.parameters.url ) {
-            console.log ('index14: No parameters set.  (E)JES Web won\'t come up.')
+            if ( siteConfigPort == undefined || siteConfigPort == 0 || ! siteConfigURL )
+              console.log ('index14: No parameters set.  (E)JES Web won\'t come up.')
+            else {
+              configuredDomainEjesWeb = siteConfigURL + ':' + siteConfigPort;
+              console.log('Index16: Taking webContent default.')
+            }
           }
           else {
           console.log(`index13: URL: ${settings.parameters.url[settings.parameters.index]}`)
@@ -300,7 +313,6 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
         } catch (e) {
           console.error('index12: Settings from fetchEjesSettings are not json.')
         }
-        var configuredDomainEjesWeb // = 'https://mvs60.phx.phoenixsoftware.com:59284'; // TODO: From persistence data in Zowe files structure.
         if ( configuredDomainEjesWeb ) {
           let node = document.createElement('iframe');
           node.setAttribute('style', 'position: fixed;top: 0px;bottom: 0px;right: 0px;width: 100%;border: none;margin: 0;padding: 0;overflow: hidden;z-index: 999999;height: 100%;');
@@ -313,38 +325,50 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
           window.addEventListener('message', (event) => { // Ejes-listener
             // Do we trust the sender of this message?  (might be
             // different from what we originally opened, for example).
+            message.verb = 'initialize';
+            postMessageCount++;
+            message.postMessageCount = postMessageCount;
 
-            console.log(`zoweZluxELD: (a) Origin is "${event.origin}".  Configured origin is "${configuredDomainEjesWeb}".`) //  Data is ${JSON.stringify(event.data)}.`)
-            console.log(`zoweZluxELD:   Data is "${JSON.stringify(event.data)}".`)
+            console.log(`zoweZlux01D: (a) Origin is "${event.origin}".  Configured origin is "${configuredDomainEjesWeb}".`) //  Data is ${JSON.stringify(event.data)}.`)
+            console.log(`zoweZlux02D:   Data is "${JSON.stringify(event.data)}".`)
             if ( event.data == 'retry' ) {
-              console.log(`zoweZluxELD:   "${event.data}" requested.`)
+              console.log(`zoweZlux03D:   "${event.data}" requested.`)
               __isEjesWeb = false
-              __ejesZlux.postMessage('zoweZluxEL', configuredDomainEjesWeb);  // Tell (E)JES to connect.
+              __ejesZlux.postMessage(message, configuredDomainEjesWeb);  // Tell (E)JES to connect.
               return;
             }
             if (event.origin != configuredDomainEjesWeb) {
-              console.log(`zoweZluxXLE: Message of unconfigured origin rejected: "${event.origin}"`)
+              console.log(`zoweZlux04E: Message of unconfigured origin rejected: "${event.origin}"`)
               return;
             }
 
-            //console.log(`zoweZluxELD: Source is "${event.source}".`)
-            console.log(`zoweZluxELD:   Data is "${event.data}".`)
+            console.log(`zoweZlux05D:   Data is "${event.data}".`)
             if ( ! __isEjesWeb ) {
               if ( event.data == token ) {
-                console.log('zoweZluxELI: (E)JES Web running under Zowe.  Connection confirmed.');
+                console.log('zoweZlux06I: (E)JES Web running under Zowe.  Connection confirmed.');
+
+                if ( message.verb == 'initialize' )
+                  message.verb = 'refresh';
                 __isEjesWeb = true;
+                if ( ! global_repeat_timer )
+                  global_repeat_timer = setInterval(function xmitHandle() {
+                    message.verb = 'refresh';
+                    postMessageCount++;
+                    message.postMessageCount = postMessageCount;
+                    __ejesZlux.postMessage(message, configuredDomainEjesWeb);
+                  }, 2000);
               }
               else
-                console.log('zoweZluxELI: Connection confirmation with incorrect token rejected.');
+                console.log('zoweZlux07I: Connection confirmation with incorrect token rejected.');
             return;
             }
 
             // TODO : Handle responses from Zowe requests.
-            console.log('zoweZluxELD: (E)JES Web message being processed.')
+            console.log('zoweZlux08D: (E)JES Web message being processed.')
           }, 
           false);
           setTimeout(() => {
-            __ejesZlux.postMessage('zoweZluxEL', configuredDomainEjesWeb);  // Tell (E)JES to connect.
+            __ejesZlux.postMessage(message, configuredDomainEjesWeb);  // Tell (E)JES to connect.
           }, 1000);
         } else {
           let node = document.getElementById('ejes-input-dialog')
