@@ -15,7 +15,7 @@
 In this case however, we are loading a simple JS file, ../js/main.js which has some awareness of Desktop globals for interaction -->
 <html>
   <head>
-    <title>Robert\'s Hello World</title>
+    <title>(E)JES Web</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/iframe.css">
@@ -31,56 +31,60 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
     <script type="text/javascript" src="../js/main.js"></script>
     <!-- UNIT TEST -->
     <script>
+      __ejesZlux = null;
+      __isEjesWeb = false;
+
       let notifications = [];
-      let windowTitle = "Robert\'s Hello World";
+      let windowTitle = "(E)JES Web";
       let SAMPLE_IFRAME_EXAMPLE_CONTEXT = {
         exampleProp: "test"
       };
 
       function handleMessageAdded(message){
         notifications.unshift(message);
-        console.log(`iFrame instance ${ZoweZLUX.iframe.instanceId} ADD HANDLER: `, notifications,);
+        console.log(`handleMessageAdded01: iFrame instance ${ZoweZLUX.iframe.instanceId} ADD HANDLER: `, notifications,);
       }
 
       function handleMessageRemoved(id) {
         notifications.splice(notifications.findIndex(x => x.id === id), 1);
-        console.log(`iFrame instance ${ZoweZLUX.iframe.instanceId} REMOVE HANDLER: `, notifications);
+        console.log(`handleMessageRemoved01: iFrame instance ${ZoweZLUX.iframe.instanceId} REMOVE HANDLER: `, notifications);
       }
 
       function assertParam(param, testNum){
         if(param === false){
-          console.warn('ASSERT FAILED: ', testNum)
+          console.warn('assertParam01: ASSERT FAILED: ', testNum)
         } else {
-          console.log(`Assert passed: `, testNum);
+          console.log(`assertParam02: Assert passed: `, testNum);
         }
       }
 
       function assertEqual(testValue, expectedValue, testNum){
         if(testValue === expectedValue){
-          console.log('Assert equal passed: ', testNum)
+          console.log('assertEqual01: Assert equal passed: ', testNum)
         } else {
-          console.warn('ASSERT EQUAL FAILED: ', testNum, 'Test value: ' + testValue + ' | Expected value: ' + expectedValue);
+          console.warn('assertEqual02: ASSERT EQUAL FAILED: ', testNum, 'Test value: ' + testValue + ' | Expected value: ' + expectedValue);
         }
       }
 
       function testZoweZLUXExists(){
         if (ZoweZLUX !== undefined) {
-          console.log("Does the ZoweZLUX global object exist? " + "YES!");
+          console.log("testZoweZLUXExists01: Does the ZoweZLUX global object exist? " + "YES!");
         }else {
-          console.log("Does the ZoweZLUX global object exist? " + "NO!");
+          console.log("testZoweZLUXExists02: Does the ZoweZLUX global object exist? " + "NO!");
         }
         assertParam(ZoweZLUX !== undefined, 2);
       }
 
       async function testNotificationManager(){
+        console.log('async testNotificationManager')
         ZoweZLUX.iframe.isSingleAppMode().then(function(value) {
           if (value) { //If we are in single app mode...
-            console.error("Testing notification manager is not yet supported in standalone mode.");
+            console.error("async testNotificationManager02: Testing notification manager is not yet supported in standalone mode.");
             return;
           }
         });
         ZoweZLUX.notificationManager.addMessageHandler(this).then(res => {
-          ZoweZLUX.notificationManager.createNotification('Sample Iframe Notification', 'I will disappear soon. My life is fleeting.', 1, ZoweZLUX.iframe.pluginDef.basePlugin.identifier).then(async function(testNotification) {
+          ZoweZLUX.notificationManager.createNotification('async testNotificationManager03: Sample Iframe Notification', 'I will disappear soon. My life is fleeting.', 1, ZoweZLUX.iframe.pluginDef.basePlugin.identifier).then(async function(testNotification) {
             await ZoweZLUX.notificationManager.notify(testNotification)
             await ZoweZLUX.notificationManager.notify(testNotification)
             await ZoweZLUX.notificationManager.notify(testNotification)
@@ -98,25 +102,27 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
       }
 
       async function testNotification() {
+        console.log('async testNotification');
         ZoweZLUX.iframe.isSingleAppMode().then(function(value) {
           if (value) { //If we are in single app mode...
-            console.error("Sending notifications is not yet supported in standalone mode.");
+            console.error("async testNotification: Sending notifications is not yet supported in standalone mode.");
             return;
           }
         });
-        ZoweZLUX.notificationManager.createNotification('Sample Iframe Notification', 'I will disappear soon. My life is fleeting.', 1, ZoweZLUX.iframe.pluginDef.basePlugin.identifier).then(async function(testNotification) {
+        ZoweZLUX.notificationManager.createNotification('async testNotification: Sample Iframe Notification', 'I will disappear soon. My life is fleeting.', 1, ZoweZLUX.iframe.pluginDef.basePlugin.identifier).then(async function(testNotification) {
             await ZoweZLUX.notificationManager.notify(testNotification)})
       }
 
       async function testGlobalization(){
+        console.log('async testGlobalization');
         ZoweZLUX.iframe.isSingleAppMode().then(function(value) {
           if (value) { //If we are in single app mode...
-            console.error("Testing globalization is not yet supported in standalone mode.");
+            console.error("async testGlobalization: Testing globalization is not yet supported in standalone mode.");
             return;
           }
         });
         let curLang = await ZoweZLUX.globalization.getLanguage();
-        console.warn("Current language detected as: " + curLang);
+        console.warn("async testGlobalizationL Current language detected as: " + curLang);
 
         await ZoweZLUX.globalization.setLanguage('en');
         ZoweZLUX.globalization.getLanguage().then((res) => {
@@ -146,30 +152,32 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
       }
 
       function contextMenuAction0(){
-        console.warn('You selected action 0.')
+        console.warn('contextMenuAction0 01: You selected action 0.')
       }
 
       function contextMenuAction1(){
-        console.error('You selected action 1.')
+        console.error('contextMenuAction1 01: You selected action 1.')
       }
 
       async function testContextMenu(event) {
+        console.log('async testContextMenu01')
         await windowActions.spawnContextMenu(event.clientX, event.clientY, [
           {
-            text: 'Action 0 - Click me',
+            text: 'async testContextMenu02: Action 0 - Click me',
             action: contextMenuAction0
           },
           {
-            text: "Action 1 - Don't click me",
+            text: "async testContextMenu03: Action 1 - Don't click me",
             action: contextMenuAction1
           }
         ], false)
       }
 
       async function testWindowActions(event){
+        console.log('async testWindowActions01')
         ZoweZLUX.iframe.isSingleAppMode().then(function(value) {
           if (value) { //If we are in single app mode...
-            console.error("Testing window actions is not supported in standalone mode.");
+            console.error("async testWindowActions02: Testing window actions is not supported in standalone mode.");
             return;
           }
         });
@@ -182,9 +190,10 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
       }
 
       async function testLogger(){
+        console.log('async testLogger01')
         let myLogger = ZoweZLUX.logger.makeComponentLogger('Iframe Unit Test');
-        myLogger.warn('Retrieving plugin definition: ', ZoweZLUX.iframe.pluginDef);
-        myLogger.warn('Retrieving launch metadata (will be null if this app was started without app to app communication): ', ZoweZLUX.iframe.launchMetadata);
+        myLogger.warn('async testLogger02: Retrieving plugin definition: ', ZoweZLUX.iframe.pluginDef);
+        myLogger.warn('async testLogger03: Retrieving launch metadata (will be null if this app was started without app to app communication): ', ZoweZLUX.iframe.launchMetadata);
 
         let sublogger = myLogger.makeSublogger('Iframe Sublogger');
         sublogger.info('\ninfo log');
@@ -196,6 +205,7 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
       }
 
       async function testDispatcher(){
+        console.log('async testDispatcher01')
         SAMPLE_IFRAME_EXAMPLE_CONTEXT = {
           exampleProp: "Adapter"
         }
@@ -213,26 +223,28 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
         let registerAbsActionRes = await ZoweZLUX.dispatcher.registerAbstractAction(makeActionRes);
         let exampleAction = await ZoweZLUX.dispatcher.getAbstractActionById("zowe.iframe.test.action");
         let actions = await ZoweZLUX.dispatcher.getAbstractActions(null, SAMPLE_IFRAME_EXAMPLE_CONTEXT);
-        console.log("getAbstractActionById(\"zowe.iframe.test.action\"): ", exampleAction);
-        console.log("iFrame getAbstractActions: ", actions);
+        console.log("async testDispatcher02: getAbstractActionById(\"zowe.iframe.test.action\"): ", exampleAction);
+        console.log("async testDispatcher03: iFrame getAbstractActions: ", actions);
       }
 
       async function testWindowTitle(){
+        console.log('async testWindowTitle01')
         console.log(window.parent.ZoweZLUX);
-        if (windowTitle == 'Robert\'s Hello World') {
-          await windowActions.setTitle('Iframe Sample (title changed)');
-          windowTitle = 'Iframe Sample (title changed)';
+        if (windowTitle == '(E)JES Web') {
+          await windowActions.setTitle('(E)JES Web (title changed)');
+          windowTitle = '(E)JES Web (title changed)';
         } else {
-          await windowActions.setTitle('Robert\'s Hello World');
-          windowTitle = 'Robert\'s Hello World';
+          await windowActions.setTitle('(E)JES Web');
+          windowTitle = '(E)JES Web';
         }
       }
 
       async function testSlowClose(){
+        console.log('async testSlowClose01')
         await viewportEvents.registerCloseHandler(() => {
           return new Promise((resolve, reject) => {
             setTimeout(() => {
-              console.log('This is a test close handler with a 3s delay before closing to simulate an expensive function');
+              console.log('async testSlowClose02: This is a test close handler with a 3s delay before closing to simulate an expensive function');
               resolve();
             }, 3000)
           })
@@ -241,10 +253,11 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
       }
 
       async function testClose(){
+        console.log('async testClose01')
         await viewportEvents.registerCloseHandler(() => {
           return new Promise((resolve, reject) => {
             setTimeout(() => {
-              console.log('Normal close');
+              console.log('async testClose01: Normal close');
               resolve();
             }, 0)
           })
@@ -253,6 +266,7 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
       }
 
       function test(event) {
+        console.log('test');
         testLogger();
         testGlobalization();
         testNotificationManager();
@@ -262,6 +276,58 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
       }
 
       function iframeLoaded() {
+        
+        console.log('iframeLoaded01')
+        var configuredDomainEjesWeb // = 'https://mvs60.phx.phoenixsoftware.com:59284'; // TODO: From persistence data in Zowe files structure.
+        if ( configuredDomainEjesWeb ) {
+          let node = document.createElement('iframe');
+          node.setAttribute('style', 'position: fixed;top: 0px;bottom: 0px;right: 0px;width: 100%;border: none;margin: 0;padding: 0;overflow: hidden;z-index: 999999;height: 100%;');
+          node.setAttribute('id', 'ejesweb_iframe');
+          node.setAttribute('src', configuredDomainEjesWeb + '/EjesWeb/');
+          document.getElementById('ejesweb_reference_frame').appendChild(node);
+
+          __ejesZlux = document.getElementById('ejesweb_iframe').contentWindow;
+          var token = 'ejesweb';
+          window.addEventListener('message', (event) => { // Ejes-listener
+            // Do we trust the sender of this message?  (might be
+            // different from what we originally opened, for example).
+
+            console.log(`zoweZluxELD: (a) Origin is "${event.origin}".  Configured origin is "${configuredDomainEjesWeb}".`) //  Data is ${JSON.stringify(event.data)}.`)
+            console.log(`zoweZluxELD:   Data is "${JSON.stringify(event.data)}".`)
+            if ( event.data == 'retry' ) {
+              console.log(`zoweZluxELD:   "${event.data}" requested.`)
+              __isEjesWeb = false
+              __ejesZlux.postMessage('zoweZluxEL', configuredDomainEjesWeb);  // Tell (E)JES to connect.
+              return;
+            }
+            if (event.origin != configuredDomainEjesWeb) {
+              console.log(`zoweZluxXLE: Message of unconfigured origin rejected: "${event.origin}"`)
+              return;
+            }
+
+            //console.log(`zoweZluxELD: Source is "${event.source}".`)
+            console.log(`zoweZluxELD:   Data is "${event.data}".`)
+            if ( ! __isEjesWeb ) {
+              if ( event.data == token ) {
+                console.log('zoweZluxELI: (E)JES Web running under Zowe.  Connection confirmed.');
+                __isEjesWeb = true;
+              }
+              else
+                console.log('zoweZluxELI: Connection confirmation with incorrect token rejected.');
+            return;
+            }
+
+            // TODO : Handle responses from Zowe requests.
+            console.log('zoweZluxELD: (E)JES Web message being processed.')
+          }, 
+          false);
+          setTimeout(() => {
+            __ejesZlux.postMessage('zoweZluxEL', configuredDomainEjesWeb);  // Tell (E)JES to connect.
+          }, 1000);
+        } else {
+          let node = document.getElementById('ejes-input-dialog')
+          node.setAttribute('style', 'display: inherit;');
+        }
         // Register accordion logic
         var acc = document.getElementsByClassName("iframe-accordion");
         var i;
@@ -299,9 +365,8 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
 
   </script>
   </head>
-  <body class="iframe-font test-panel-container" onload="iframeLoaded(this)" id="bod"   style="height: 1000 px;width: 100%;background-color: rgb(6, 76, 85);" onresize="console.log(document.getElementById('ejesweb_iframe').getBoundingClientRect())" >
-    <iframe id="ejesweb_iframe"
-    src="https://mvs70.phx.phoenixsoftware.com:59284/EjesWeb/"
+  <body class="iframe-font test-panel-container" onload="iframeLoaded(this)" id="ejesweb_reference_frame"   style="height: 3000 px;width: 100%;background-color: rgb(6, 76, 85);" onresize="console.log(document.getElementById('ejesweb_iframe').getBoundingClientRect())" >
+    <!-- <iframe id="ejesweb_iframe"
     style="
       position: fixed;
       top: 0px;
@@ -314,8 +379,145 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
       overflow: hidden;
       z-index: 999999;
       height: 100%;
-    ">
-  </iframe>
+    "> 
+    </iframe>-->
+    <div class="test-panel plugin-test-panel" style="display: none;" id="ejes-input-dialog">    
+      <div class="bottom-10">
+          <button class="iframe-accordion bold-text">Iframe Plugin requests:</button>
+          <div class="panel">
+              <!-- Tests the sending of requests to other plugins. Defaults to send a message
+                   to itself (and responding) to show more parts of the API-->
+                <span class="bold-text">Test: </span>
+              <br></br>
+              <button class="iframe-button" type="button" onclick="test(event);">Run</button>
+
+              <br></br>
+                <span class="bold-text">Server Interaction: </span>
+              <br></br>
+              <button class="iframe-button" type="button" onclick="testLogger()">Log</button>
+              <button class="iframe-button" type="button" onclick="getDefaultsFromServer()">Get metadata from Server</button>
+              <button class="iframe-button" type="button" onclick="saveToServer()">Save metadata to Server</button>
+
+              <div class="iframe-desktop-mode" style="display: none;">
+                <br></br>
+                  <span class="bold-text">Window Events: </span>
+                <br></br>
+                <button class="iframe-button" type="button" onclick="testWindowTitle();">Change Title</button>
+                <button class="iframe-button" type="button" onclick="windowActions.minimize();">Minimize</button>
+                <button class="iframe-button" type="button" onclick="windowActions.maximize();">Maximize</button>
+                <button class="iframe-button" type="button" onclick="windowActions.restore();">Restore</button>
+                <button class="iframe-button" type="button" onclick="testSlowClose();">Slow Close (3s Handler)</button>
+                <button class="iframe-button" type="button" onclick="testClose();">Close</button>
+              
+                <br></br>
+                  <span class="bold-text">Desktop Components: </span>
+                <br></br>
+                <button class="iframe-button" type="button" onclick="testNotification()">Send a notification</button>
+                <button class="iframe-button" type="button" onclick="testContextMenu(event)">Spawn a context menu</button>
+              </div>
+              <div class="iframe-single-app-mode" style="display: none">
+                <br></br>
+                  <span class="bold-text">Window Events unavailable (viewing in standalone mode) </span>
+                <br></br>
+                  <span class="bold-text">Desktop Components unavailable (viewing in standalone mode) </span>
+                <br></br>
+              </div>
+
+              </div>
+          
+          <div class="iframe-single-app-mode" style="display: none">
+            <button class="iframe-accordion bold-text">App to App interaction unavailable (viewing in standalone mode)</button>
+            
+            <br></br>
+            <br></br>
+
+            <button class="iframe-accordion bold-text">Dataservice Request test: (not implemented yet in standalone mode)</button>
+              <div class="panel dataservice-test-panel">
+                      <div></div> <!-- Dummy div element for QA-->
+                      <div>
+                        <input class="iframe-input input-height input-corner" placeholder="Enter message here." 
+                          name="helloTextStandalone" id="helloTextStandalone" oninput="inputChanged()" style="width: 50%;"/>
+                        <button class="iframe-button" id="runButton" onclick="sayHello()" disabled
+                          style="color: grey; border-color: grey;">Run</button>
+                      </div>
+                      <div>
+                        <textarea readonly class="server-response" placeholder="Response will be shown here." name="serverResponseMessageStandalone" id="serverResponseMessageStandalone"></textarea>
+                      </div>
+              </div>
+          </div>
+
+          <div class="iframe-desktop-mode" style="display: none">
+            <button class="iframe-accordion bold-text">App to App interaction:</button>
+            <div class="panel">
+                <span class="bold-text">Application Identifier: </span>
+                <div>
+                  <div class="div-input">
+                    <input class="iframe-input input-height input-corner" type="text" name="appId" id="appId" placeholder="Enter app identifier." value="org.zowe.terminal.tn3270"/>
+                  </div>
+                  <div>
+                    <!-- Action types are used to determine what sort of Action is being taken on whatever App instance is the target. Launch simply creates a new instance with the context you provide, but Message can be used to communicate with an already open Instance to drive some action -->
+                    <label class="bold-text">Action Type: </label>
+                    <input type="radio" id="actionLaunch"
+                          name="actionType" value="Launch" checked>
+                    <label for="actionLaunch">Launch</label>
+          
+                    <input type="radio" id="actionMessage"
+                          name="actionType" value="Message">
+                    <label for="actionMessage">Message</label>
+                  </div>
+                  <!-- App target modes are used to determine which instance of an App should be communicated with. You can create a new instance to send the Action to, or you could reuse an existing instance that is open. -->
+                  <div style="padding-bottom: 20px;">
+                    <label class="bold-text">App Target Mode: </label>
+                    <input type="radio" id="targetCreate"
+                          name="targetMode" value="PluginCreate" checked>
+                    <label for="targetCreate">Create New</label>
+          
+                    <input type="radio" id="targetReuse"
+                          name="targetMode" value="PluginFindAnyOrCreate">
+                    <label for="targetReuse">Reuse Any Open</label>
+                  </div>
+                  <span class="div-input bold-text">Parameters:</span>
+                  <div class="div-textarea-input">
+                    <!-- The text here is merely an example which provides some connection details for the terminal app. It could be anything so long as the receiving App supports it.
+                        In this example App, the contents here will be put inside of a JSON with the contents as the "data" attribute. -->
+                    <textarea class="iframe-input input-corner" rows="11" cols="50" name="parameters" id="parameters">
+                    {"type":"connect",
+                    "connectionSettings":{
+                      "host":"localhost",
+                      "port":23,
+                      "deviceType":5,
+                      "alternateHeight":60,
+                      "alternateWidth":132,
+                      "oiaEnabled": true,
+                      "security": {
+                        "type":0
+                      }
+                    }}</textarea>
+                  </div>
+                  <button class="iframe-button" type="button" onclick="sendAppRequest()">Send App request</button>
+                  <br></br>
+                  <div style="width: 100%">
+                    <span class="bold-text">App Status or Message:</span>
+                    <p class="display-text   disable-effect" id="status">Status will appear here.</p>
+                  </div>
+                  </div>
+              </div>
+              <button class="iframe-accordion bold-text">Dataservice Request test:</button>
+              <div class="panel dataservice-test-panel">
+                <div></div> <!-- Dummy div element for QA-->
+                <div>
+                  <input class="iframe-input input-height input-corner" placeholder="Enter message here." 
+                    name="helloText" id="helloText" oninput="inputChanged()" style="width: 50%;"/>
+                  <button class="iframe-button" id="runButton" onclick="sayHello()"
+                    style="color: grey; border-color: grey;">Run</button>
+                </div>
+                <div>
+                  <textarea readonly class="server-response" placeholder="Response will be shown here." name="serverResponseMessage" id="serverResponseMessage"></textarea>
+                </div>
+              </div>
+          </div>
+      </div>
+    </div>  
   </body>
 </html>
 
