@@ -312,6 +312,12 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
           }
         } catch (e) {
           console.error('index12: Settings from fetchEjesSettings are not json.')
+          if ( siteConfigPort == undefined || siteConfigPort == 0 || ! siteConfigURL )
+            console.error('index17: webContent defaults not properly set.')
+            else {
+              configuredDomainEjesWeb = siteConfigURL + ':' + siteConfigPort;
+              console.log('Index18: Taking webContent default after no persistence information discovered.')
+            }
         }
         if ( configuredDomainEjesWeb ) {
           let node = document.createElement('iframe');
@@ -429,6 +435,22 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
     </iframe>-->
     <div class="test-panel plugin-test-panel" style="display: none;" id="ejes-input-dialog">    
       <div class="bottom-10">
+
+              <button class="iframe-accordion bold-text">(E)Jes Configuration:</button>
+              <div class="panel dataservice-test-panel">
+                <div></div> <!-- Dummy div element for QA-->
+                <div>
+                  <input class="iframe-input input-height input-corner" placeholder="Enter https://url:port here." 
+                    name="ejes_url_and_port" id="ejes_url_and_port" oninput="inputChanged()" style="width: 50%;"/>
+                  <button class="iframe-button" id="runButton" onclick="sayHello()" disabled
+                    style="color: grey; border-color: grey;">Run</button>
+                </div>
+                <div>
+                  <textarea readonly class="server-response" placeholder="URL response will appear here if necessary." name="ejes_url_response" id="ejes_url_response"></textarea>
+                </div>
+              </div>
+
+
           <button class="iframe-accordion bold-text">Iframe Plugin requests:</button>
           <div class="panel">
               <!-- Tests the sending of requests to other plugins. Defaults to send a message
@@ -481,13 +503,13 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
               <div class="panel dataservice-test-panel">
                       <div></div> <!-- Dummy div element for QA-->
                       <div>
-                        <input class="iframe-input input-height input-corner" placeholder="Enter message here." 
-                          name="helloTextStandalone" id="helloTextStandalone" oninput="inputChanged()" style="width: 50%;"/>
+                        <input class="iframe-input input-height input-corner" placeholder="Enter https://url:port here." 
+                          name="ejes_url_and_port" id="ejes_url_and_port" oninput="inputChanged()" style="width: 50%;"/>
                         <button class="iframe-button" id="runButton" onclick="sayHello()" disabled
                           style="color: grey; border-color: grey;">Run</button>
                       </div>
                       <div>
-                        <textarea readonly class="server-response" placeholder="Response will be shown here." name="serverResponseMessageStandalone" id="serverResponseMessageStandalone"></textarea>
+                        <textarea readonly class="server-response" placeholder="URL response will appear here if necessary." name="ejes_url_response" id="ejes_url_response"></textarea>
                       </div>
               </div>
           </div>
