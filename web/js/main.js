@@ -23,17 +23,17 @@
 const MY_PLUGIN_ID = 'org.zowe.zlux.ejes.iframe';
 
 function SettingsService() {
-  console.log('MAIN01: SettingsService01');
+  console.log('MAIN01: SettingsService');
   this.plugin = null;
 }
 
 SettingsService.prototype.setPlugin = function(plugin) {
-  console.log('MAIN02: setPlugin01');
+  console.log('MAIN02: setPlugin');
   this.plugin = plugin;
 }
 
 SettingsService.prototype.getDefaultsFromServer = async function(successCallback, errorCallback) {
-  console.log('MAIN03: async getDefaultsFromServer01')
+  console.log('MAIN03: async getDefaultsFromServer')
   let xhr = new XMLHttpRequest();
   let uri = await ZoweZLUX.uriBroker.pluginConfigUri(this.plugin, 'requests/app', undefined);
   xhr.open('GET', uri);
@@ -43,7 +43,7 @@ SettingsService.prototype.getDefaultsFromServer = async function(successCallback
         console.log(`MAIN80: SuccessCallback status: ${xhr.status}, statusText: ${xhr.statusText}.`)
         successCallback(xhr.responseText);
       } else {
-        errorCallback(`responseText: ${xhr.responseText}, status: ${xhr.status}, statusText: ${xhr.statusText}.`);
+        errorCallback(`id: { id: "MAIN84", responseText: ${xhr.responseText}, status: ${xhr.status}, statusText: ${xhr.statusText}.`);
       }
     }
   }
@@ -54,19 +54,19 @@ SettingsService.prototype.getDefaultsFromServer = async function(successCallback
 }
 
 SettingsService.prototype.saveAppRequest = async function(actionType, targetMode, parameters, successCallback, errorCallback) {
-  console.log('MAIN04: async saveAppRequest01')
+  console.log(`MAIN04: async saveAppRequest.  actionType: ${actionType}, targetMode: ${targetMode}, parameters: ${parameters}`)
   let xhr = new XMLHttpRequest();
   let uri = await ZoweZLUX.uriBroker.pluginConfigUri(this.plugin, 'requests/app', 'parameters');  
   xhr.open('PUT', uri, true);
   xhr.setRequestHeader('Content-Type', 'application/json');
   xhr.onreadystatechange = function() {
     if (this.readyState == XMLHttpRequest.DONE) {
-      console.log(`MAIN05: async saveAppRequest02: Saved parameters with HTTP status=${this.status}`);
+      console.log(`MAIN05: async saveAppRequest: Saved parameters with HTTP status=${this.status}`);
       if (this.status == 200 || this.status == 201) {
         console.log(`MAIN81: SuccessCallback status: ${xhr.status}, statusText: ${xhr.statusText}.`)
         successCallback(xhr.responseText);
       } else {
-        errorCallback(`responseText: ${xhr.responseText}, status: ${xhr.status}, statusText: ${xhr.statusText}.`);
+        errorCallback(`id: "MAIN85", responseText: ${xhr.responseText}, status: ${xhr.status}, statusText: ${xhr.statusText}`);
       }
     }
   }
@@ -85,19 +85,19 @@ SettingsService.prototype.saveAppRequest = async function(actionType, targetMode
 }
 
 SettingsService.prototype.saveAppId = async function(appId, successCallback, errorCallback) {
-  console.log('MAIN06: async saveAppId01');
+  console.log(`MAIN06: async saveAppId, appId: ${appId}`);
   let xhr = new XMLHttpRequest();
   let uri = await ZoweZLUX.uriBroker.pluginConfigUri(this.plugin, 'requests/app', 'appid');
   xhr.open('PUT', uri, true);
   xhr.setRequestHeader('Content-Type', 'application/json');
   xhr.onreadystatechange = function() {
     if (this.readyState == XMLHttpRequest.DONE) {
-      console.log(`MAIN07: async saveAppId02: Saved App ID with HTTP status=${this.status}`);
+      console.log(`MAIN07: async saveAppId: Saved App ID with HTTP status=${this.status}`);
       if (this.status == 200 || this.status == 201) {
         console.log(`MAIN82: SuccessCallback status: ${xhr.status}, statusText: ${xhr.statusText}.`)
         successCallback(xhr.responseText);
       } else {
-        errorCallback(`responseText: ${xhr.responseText}, status: ${xhr.status}, statusText: ${xhr.statusText}.`);
+        errorCallback(`id: "MAIN83", responseText: ${xhr.responseText}, status: ${xhr.status}, statusText: ${xhr.statusText}`);
       }
     }
   }
@@ -122,7 +122,7 @@ HelloService.prototype.setDestination = function(path) {
 }
 
 HelloService.prototype.sayHello = function(text, destination, callback) {
-  console.log('MAIN08: sayHello01');
+  console.log('MAIN08: sayHello');
   let xhr = new XMLHttpRequest();
   xhr.open('POST', destination, true);
   xhr.setRequestHeader('Content-Type', 'application/json');
@@ -145,9 +145,68 @@ if (ZoweZLUX) {
     settingsService.setPlugin(res);
   })
 }
+function fetchEjesSettings(nextStepCallback) {  // Return JSON.  If error is a defined property, an error occurred.
+  var resultInJSON, text;
+  console.log('MAIN59: fetchEjesSettings');
+  ZoweZLUX.iframe.isSingleAppMode().then(function(value) {
+    if (value) { //If we are in single app mode...
+      console.error(text = "MAIN50: This action is not supported yet in standalone mode.");
+      nextStepCallback && nextStepCallback(`{ "error": "${text}" }`);
+      return;
+    }
+  });
+  if (ZoweZLUX) {
+    console.log('MAIN51: fetchEjesSettings: IFrame has ZoweZLUX global.');
+    settingsService.getDefaultsFromServer(function success (resText) {
+      console.log(`MAIN34: success, resText: ${resText}`)
+      try {
+        let responseJson = JSON.parse(resText);
+        console.log(`MAIN12: JSON=${JSON.stringify(responseJson)}`);
+        if (responseJson.contents.appid && responseJson.contents.parameters) {
+          let paramData = responseJson.contents.parameters.data;
+          document.getElementById('parameters').value = paramData.parameters;
+
+          let targetModes = document.getElementsByName('targetMode');
+          for (let i =0; i < targetModes.length; i++) {
+            if (targetModes[i].value == paramData.appTarget) {
+              targetModes[i].checked = true;
+              break;
+            }
+          }
+
+          let actionTypes = document.getElementsByName('actionType');
+          for (let i =0; i < actionTypes.length; i++) {
+            if (actionTypes[i].value == paramData.actionType) {
+              actionTypes[i].checked = true;
+              break;
+            }
+          }
+
+          document.getElementById('appId').value = responseJson.contents.appid.data.appId;
+          resultInJSON =  `{ "appId": "${responseJson.contents.appid.data.appId}", "parameters": ${paramData.parameters} }`;
+          console.log(`MAIN57: Success: JSON returned is=${resultInJSON}`);
+          nextStepCallback && nextStepCallback(resultInJSON);
+        } else {
+          console.log(text = `MAIN53: Success: getDefaultsFromServer: Incomplete data. AppID ${responseJson.contents.appid ? 'found': 'missing'}, Parameters ${responseJson.contents.parameters ? 'found': 'missing'}.`);
+          resultInJSON =  `{ "error": "${text}" }`;
+          nextStepCallback && nextStepCallback(resultInJSON);
+        }
+      } catch (e) {
+        console.log(text = 'MAIN54: Success: getDefaultsFromServer: Response was not JSON');
+        resultInJSON =  `{ "error": "${text}", "detail": "${e}"}`;
+        nextStepCallback && nextStepCallback(resultInJSON);
+      }
+    }, function error (e) {
+      console.log(text = `MAIN55: Error: getDefaultsFromServer: Error on getting defaults, e=${e}`);
+      document.getElementById('status').innerHTML = 'MAIN99: Error getting defaults';
+      resultInJSON =  `{ "error": "${text}", "detail": "${e}" }`;
+      nextStepCallback && nextStepCallback(resultInJSON);
+    });
+    console.log(`MAIN56: fetchEjesSettings end of function.`);
+  }}
 
 function getDefaultsFromServer() {
-  console.log('MAIN09: getDefaultsFromServer01');
+  console.log('MAIN09: getDefaultsFromServer');
   ZoweZLUX.iframe.isSingleAppMode().then(function(value) {
     if (value) { //If we are in single app mode...
       console.error("MAIN10: This action is not supported yet in standalone mode.");
@@ -155,7 +214,7 @@ function getDefaultsFromServer() {
     }
   });
   if (ZoweZLUX) {
-    console.log('MAIN11: getDefaultsFromServer02: IFrame has ZoweZLUX global.');
+    console.log('MAIN11: getDefaultsFromServer: IFrame has ZoweZLUX global.');
     settingsService.getDefaultsFromServer((resText)=> {
       try {
         let responseJson = JSON.parse(resText);
@@ -182,20 +241,20 @@ function getDefaultsFromServer() {
 
           document.getElementById('appId').value = responseJson.contents.appid.data.appId;
         } else {
-          console.log(`MAIN13: getDefaultsFromServer03: Incomplete data. AppID ${responseJson.contents.appid ? 'found': 'missing'}, Parameters ${responseJson.contents.parameters ? 'found': 'missing'}.`);
+          console.log(`MAIN13: getDefaultsFromServer: Incomplete data. AppID ${responseJson.contents.appid ? 'found': 'missing'}, Parameters ${responseJson.contents.parameters ? 'found': 'missing'}.`);
         }
       } catch (e) {
-        console.log(`MAIN14: getDefaultsFromServer04: Response was not JSON`);
+        console.log(`MAIN14: getDefaultsFromServer: Response was not JSON`);
       }
     }, (e)=> {
-      console.log(`MAIN15: getDefaultsFromServer05: Error on getting defaults, e=${e}`);
+      console.log(`MAIN15: getDefaultsFromServer: Error on getting defaults, e=${e}`);
       document.getElementById('status').innerHTML = 'MAIN99: Error getting defaults';
     });
   }
 };
 
 function saveToServer() {
-  console.log('MAIN16: saveToServer01')
+  console.log('MAIN16: saveToServer')
   ZoweZLUX.iframe.isSingleAppMode().then(function(value) {
     if (value) { //If we are in single app mode...
       console.error("MAIN17: saveToServer: This action is not supported yet in standalone mode.");
@@ -203,7 +262,7 @@ function saveToServer() {
     }
   });
   if (ZoweZLUX) {
-    console.log('MAIN18: saveToServer02: IFrame has ZoweZLUX global (saveToServer)');
+    console.log('MAIN18: saveToServe: IFrame has ZoweZLUX global (saveToServer)');
     let actionTypes = document.getElementsByName('actionType');
     let type;
     for (let i =0; i < actionTypes.length; i++) {
@@ -224,20 +283,20 @@ function saveToServer() {
 
     settingsService.saveAppRequest(type, mode, document.getElementById('parameters').value, (resText)=> {
       settingsService.saveAppId(document.getElementById('appId').value, (resText)=> {
-        console.log('MAIN19: saveToServer03: Completed saving app request data');
+        console.log('MAIN19: saveToServer: Completed saving app request data');
       }, (e) => {
-        console.log(`MAIN20: saveToServer04: Error on saving App ID, e=${e}`);
+        console.log(`MAIN20: saveToServer: Error on saving App ID, e=${e}`);
         document.getElementById('status').innerHTML = 'MAIN97: Error saving App ID';
       });
     }, (e)=> {
-      console.log(`MAIN21: saveToServer05: Error on saving parameters, e=${e}`);
+      console.log(`MAIN21: saveToServer: Error on saving parameters, e=${e}`);
       document.getElementById('status').innerHTML = 'MAIN98: Error saving parameters';
     });
   }
 };
 
 function inputChanged() {
-  console.log('MAIN22: inputChanged01')
+  console.log('MAIN22: inputChange')
   if(document.getElementById('helloText').value) {
     document.getElementById('runButton').disabled = false;
     document.getElementById('runButton').style.color = "#047cc0";
@@ -250,9 +309,9 @@ function inputChanged() {
 }
 
 async function sayHello() {
-  console.log('MAIN23: async sayHello01')
+  console.log('MAIN23: async sayHello')
   if (ZoweZLUX) {
-    console.log('MAIN24: async sayHello02: IFrame has ZoweZLUX global (sayHello)');
+    console.log('MAIN24: async sayHello: IFrame has ZoweZLUX global (sayHello)');
     let myPluginDef = await ZoweZLUX.pluginManager.getPlugin(MY_PLUGIN_ID);
     let url = await ZoweZLUX.uriBroker.pluginRESTUri(myPluginDef, 'hello', null);
     helloService.sayHello(document.getElementById('helloText').value, url, (resText) => {
@@ -269,7 +328,7 @@ async function sayHello() {
       }
       console.log(`MAIN25: ${responseJson}`);
     } catch (e) {
-      console.log(`MAIN26: async sayHello03: Failed to parse response json. Received response text=${resText}`);
+      console.log(`MAIN26: async sayHello: Failed to parse response json. Received response text=${resText}`);
     }
   });
   } else {
@@ -282,7 +341,7 @@ async function sayHello() {
 // by the button labelled "Send App Request"
 
 async function sendAppRequest() {
-  console.log('MAIN28: async sendAppRequest01')
+  console.log('MAIN28: async sendAppRequest')
   ZoweZLUX.iframe.isSingleAppMode().then(function(value) {
     if (value) { //If we are in single app mode...
       console.error("MAIN29: sendAppRequest: This action is not supported yet in standalone mode.");
@@ -305,7 +364,7 @@ async function sendAppRequest() {
     let statusElement = document.getElementById('status');
     let message = '';
     if (ZoweZLUX) {
-      console.log('MAIN30: async sendAppRequest02: IFrame has ZoweZLUX global (sendAppRequest)');
+      console.log('MAIN30: async sendAppRequest: IFrame has ZoweZLUX global (sendAppRequest)');
       /* PluginManager can be used to find what Plugins (Apps are a type of Plugin) are part of the current ZLUX instance.
          Once you know that the App you want is present, you can execute Actions on it by using the Dispatcher.
       */
@@ -340,16 +399,16 @@ async function sendAppRequest() {
           */
           let action = await dispatcher.makeAction(actionID, actionTitle, mode,type,appId,argumentFormatter);
           let argumentData = {'data':(parameters ? parameters : requestText)};
-          console.log((message = 'MAIN31: async sendAppRequest03: App request succeeded'));        
+          console.log((message = 'MAIN31: async sendAppRequest: App request succeeded'));        
           statusElement.innerHTML = message;
           /*Just because the Action is invoked does not mean the target App will accept it. We've made an Action on the fly,
             So the data could be in any shape under the "data" attribute and it is up to the target App to take action or ignore this request*/
           dispatcher.invokeAction(action,argumentData);
         } else {
-          console.log((message = 'MAIN32: async sendAppRequest04: Invalid target mode or action type specified'));        
+          console.log((message = 'MAIN32: async sendAppRequest: Invalid target mode or action type specified'));        
         }
       } else {
-        console.log((message = 'MAIN33: async sendAppRequest05: Could not find App with ID provided'));
+        console.log((message = 'MAIN33: async sendAppRequest: Could not find App with ID provided'));
       }
     }
     statusElement.innerHTML = message;

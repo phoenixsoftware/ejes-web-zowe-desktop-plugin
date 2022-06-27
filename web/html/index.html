@@ -276,8 +276,30 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
       }
 
       function iframeLoaded() {
-        
-        console.log('iframeLoaded01')
+        console.log('index00: iframeLoaded')
+        setTimeout(() => {
+          fetchEjesSettings(nextStepCallback);
+        }, 1000)
+      }
+
+     function nextStepCallback(json) {
+        var settings
+        console.log(`index10: nextStepCallback called!  json=${json}`)
+        try {
+          settings = JSON.parse(json)
+          console.log('index11: Converted object follows in console stream.')
+          console.log(settings)
+          if ( ! settings || ! settings.parameters || ! settings.parameters.index || ! settings.parameters.url ) {
+            console.log ('index14: No parameters set.  (E)JES Web won\'t come up.')
+          }
+          else {
+          console.log(`index13: URL: ${settings.parameters.url[settings.parameters.index]}`)
+          settings && (configuredDomainEjesWeb = settings.parameters.url[settings.parameters.index])
+          console.log(configuredDomainEjesWeb)
+          }
+        } catch (e) {
+          console.error('index12: Settings from fetchEjesSettings are not json.')
+        }
         var configuredDomainEjesWeb // = 'https://mvs60.phx.phoenixsoftware.com:59284'; // TODO: From persistence data in Zowe files structure.
         if ( configuredDomainEjesWeb ) {
           let node = document.createElement('iframe');
@@ -452,7 +474,7 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
                 <span class="bold-text">Application Identifier: </span>
                 <div>
                   <div class="div-input">
-                    <input class="iframe-input input-height input-corner" type="text" name="appId" id="appId" placeholder="Enter app identifier." value="org.zowe.terminal.tn3270"/>
+                    <input class="iframe-input input-height input-corner" type="text" name="appId" id="appId" placeholder="Enter app identifier." value="org.zowe.zlux.ejes.iframe"/>
                   </div>
                   <div>
                     <!-- Action types are used to determine what sort of Action is being taken on whatever App instance is the target. Launch simply creates a new instance with the context you provide, but Message can be used to communicate with an already open Instance to drive some action -->
@@ -481,18 +503,11 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
                     <!-- The text here is merely an example which provides some connection details for the terminal app. It could be anything so long as the receiving App supports it.
                         In this example App, the contents here will be put inside of a JSON with the contents as the "data" attribute. -->
                     <textarea class="iframe-input input-corner" rows="11" cols="50" name="parameters" id="parameters">
-                    {"type":"connect",
-                    "connectionSettings":{
-                      "host":"localhost",
-                      "port":23,
-                      "deviceType":5,
-                      "alternateHeight":60,
-                      "alternateWidth":132,
-                      "oiaEnabled": true,
-                      "security": {
-                        "type":0
-                      }
-                    }}</textarea>
+                      {
+                        "urlX": ["https://mvs60.phx.phoenixsoftware.com:59284"],
+                        "indexX": "0",
+                        "rem": "Remove 'X's, click [Save Metadata to Server]."
+                      }</textarea>
                   </div>
                   <button class="iframe-button" type="button" onclick="sendAppRequest()">Send App request</button>
                   <br></br>
