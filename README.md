@@ -11,7 +11,7 @@ Copyright Contributors to the Zowe Project.
 # (E)JES Web Zowe Desktop Plug-in
 This sample app was created for the 2022 Open Mainframe Summit for the presentation titled Demystified: Put Your Web App on the Zowe Desktop in a Flash.  It was created following the instructions in the presentation to modify the v2.x Zowe Iframe Sample App, however it was
 further modified to interface with Phoenix Software International's (E)JES product and its
-(E)JES Web component.  This software is requires to *run* the app, however you are free to
+(E)JES Web component.  (E)JES installed on the host is required to *run* the app, however you are free to
 install and modify the code in this repository as a base for your own server-hosted web apps.
 
 This app can likely be installed directly under v1.27 LTS of Zowe, but hasn't been tested.
