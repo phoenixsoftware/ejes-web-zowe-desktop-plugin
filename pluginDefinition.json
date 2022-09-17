@@ -1,19 +1,24 @@
 {
-  "identifier": "org.zowe.zlux.sample.iframe",
-  "apiVersion": "1.0.0",
-  "pluginVersion": "1.1.0",
+  "identifier": "org.zowe.zlux.ejes.web",
+  "apiVersion": "2.0.0",
+  "_rem1_v1x": { "apiVersion": "1.0.0"},
+  "pluginVersion": "3.0.0",
   "license": "EPL-2.0",
   "pluginType": "application",
   "webContent": {
     "framework": "iframe",
     "standaloneUseFramework": true,
     "launchDefinition": {
-      "pluginShortNameKey": "sampleiframe",
-      "pluginShortNameDefault": "IFrame Sample",
+      "pluginShortNameKey": "ejesweb",
+      "pluginShortNameDefault": "(E)JES Web App",
       "imageSrc": "assets/icon.png"
     },
-    "descriptionKey": "Sample App Showcasing IFrame Adapter",
-    "descriptionDefault": "Sample App Showcasing IFrame Adapter",
+    "ejesWeb": {
+      "url": "https://mvs70.phx.phoenixsoftware.com",
+      "port": 59284
+    },
+    "descriptionKey": "(E)JES Web Zowe Desktop",
+    "descriptionDefault": "(EJES Web running under Zowe",
     "startingPage": "html/index.html",
     "isSingleWindowApp": true,
     "defaultWindowStyle": {
