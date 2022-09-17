@@ -1,0 +1,28 @@
+---
+name: ejes-web
+id: org.zowe.zlux.ejes.web
+# Without the v
+version: 1.2.0
+# Human readable component name
+title: (E)JES Web on Zowe
+# Human readable component description
+description: '(E)JES Web App running in a Zowe iframe'
+homepage: https://zowe.org
+keywords:
+  - zlux
+  - appfw
+  - app
+  - iframe
+  - ejes
+license: EPL-2.0
+repository:
+  type: git
+  url: https://github.com/zowe/ejeszowedesktop.git
+# we do not specify encoding here because its already tagged ascii
+build:
+  branch: "{{build.branch}}"
+  number: "{{build.number}}"
+  commitHash: "{{build.commitHash}}"
+  timestamp: "{{build.timestamp}}"
+appfwPlugins:
+  - path: .
