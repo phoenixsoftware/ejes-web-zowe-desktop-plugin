@@ -20,7 +20,7 @@
 //   ZoweZLUX = mvdWindow.ZoweZLUX;
 // }
 
-const MY_PLUGIN_ID = 'org.zowe.zlux.ejes.iframe';
+const MY_PLUGIN_ID = 'org.zowe.zlux.ejes.web';
 
 function SettingsService() {
   console.log('MAIN01: SettingsService');
