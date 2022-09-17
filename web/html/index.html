@@ -36,7 +36,7 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
 
       let notifications = [];
       let windowTitle = "(E)JES Web";
-      let SAMPLE_IFRAME_EXAMPLE_CONTEXT = {
+      let EJES_WEB_CONTEXT = {
         exampleProp: "test"
       };
 
@@ -206,7 +206,7 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
 
       async function testDispatcher(){
         console.log('async testDispatcher01')
-        SAMPLE_IFRAME_EXAMPLE_CONTEXT = {
+        EJES_WEB_CONTEXT = {
           exampleProp: "Adapter"
         }
         let newAction = {
@@ -214,7 +214,7 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
           "defaultName":"Example 2",
           "type":"Launch",
           "targetMode":"PluginCreate",
-          "targetId":"org.zowe.zlux.sample.iframe",
+          "targetId":"org.zowe.zlux.ejes.web",
           "arg": {},
           "primaryArgument": {}
         }
@@ -222,7 +222,7 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
         console.log("makeActionFromObject res: ", makeActionRes);
         let registerAbsActionRes = await ZoweZLUX.dispatcher.registerAbstractAction(makeActionRes);
         let exampleAction = await ZoweZLUX.dispatcher.getAbstractActionById("zowe.iframe.test.action");
-        let actions = await ZoweZLUX.dispatcher.getAbstractActions(null, SAMPLE_IFRAME_EXAMPLE_CONTEXT);
+        let actions = await ZoweZLUX.dispatcher.getAbstractActions(null, EJES_WEB_CONTEXT);
         console.log("async testDispatcher02: getAbstractActionById(\"zowe.iframe.test.action\"): ", exampleAction);
         console.log("async testDispatcher03: iFrame getAbstractActions: ", actions);
       }
@@ -288,7 +288,7 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
      var message = { token: key, verb: 'intialize', message: 'none', zlux: window.location.href.split('/')[2].split(':') }
      function nextStepCallback(json) {
         var settings
-        var configuredDomainEjesWeb // = 'https://mvs60.phx.phoenixsoftware.com:59284'; // From default webContent or persistence data in Zowe files structure.
+        var configuredDomainEjesWeb // = 'https://mvs70.phx.phoenixsoftware.com:59284'; // From default webContent or persistence data in Zowe files structure.
         console.log(`index10: nextStepCallback called!  json=${json}`)
         var siteConfigURL = ZoweZLUX.iframe.pluginDef.basePlugin.webContent.ejesWeb.url;
         var siteConfigPort = ZoweZLUX.iframe.pluginDef.basePlugin.webContent.ejesWeb.port;
@@ -371,6 +371,13 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
 
             // TODO : Handle responses from Zowe requests.
             console.log('zoweZlux08D: (E)JES Web message being processed.')
+            if ( event.data == 'configureZowe' ) {
+              console.log("zoweZlux91D: Client configuration request received.");
+              document.getElementById('ejes-input-dialog').setAttribute('style','display:inherit');
+              // TODO : Handle configuration request.
+              return;
+            }
+
           }, 
           false);
           setTimeout(() => {
@@ -550,7 +557,7 @@ In this case however, we are loading a simple JS file, ../js/main.js which has s
                         In this example App, the contents here will be put inside of a JSON with the contents as the "data" attribute. -->
                     <textarea class="iframe-input input-corner" rows="11" cols="50" name="parameters" id="parameters">
                       {
-                        "urlX": ["https://mvs60.phx.phoenixsoftware.com:59284"],
+                        "urlX": ["https://mvs70.phx.phoenixsoftware.com:59284"],
                         "indexX": "0",
                         "rem": "Remove 'X's, click [Save Metadata to Server]."
                       }</textarea>
