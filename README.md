@@ -14,6 +14,10 @@ further modified to interface with Phoenix Software International's (E)JES produ
 (E)JES Web component.  (E)JES installed on the host is required to *run* the app, however you are free to
 install and modify the code in this repository as a base for your own server-hosted web apps.
 
+Of primary interest, you will find the code in index.html, specifically the code in iframeLoaded() interesting, because with modifications to main.js, it reads in data stored as a constant in pluginDefition.json.  It can also read data stored in Zowe's persistence directory, but in its current form, this requires you to cause the original sample iframe app UI to display.  Delete the constant data in pluginDefition.json, and it will show.
+
+Of additional interest, you will find that the code in iframeLoaded in index.html communicates with the (E)JES Web app.  While PSI (E)JES customer get the functionality built into the (E)JES Web, I have included the specific Zowe communication code section in webap.js.  If you install this code in the outer closure of your own web app, the code in index.html and the code in webapp.js will interoperate, allowing the Zowe code to send messages to your iframe and your web app to make requests to the Zowe plug-in to do things like save persistent data, issue notifications, or close the Zowe app.  Programming that would be up to you, but you can study main.js to see how I modified it to use callbacks to fetch Zowe information.
+
 This app can likely be installed directly under v1.27 LTS of Zowe, but hasn't been tested.  The install procedure uses a shell script that can be found in the bin directory that is a subdirectory of the instance directory.  The instance directory can be found on the INSTANCE= parameter in the ZWESVSTC job.  The syntax is: 
 
 `./install.app.sh` *path-to-plugin*
