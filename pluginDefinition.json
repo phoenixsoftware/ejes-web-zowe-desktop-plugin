@@ -1,8 +1,7 @@
 {
   "identifier": "org.zowe.zlux.ejes.web",
   "apiVersion": "2.0.0",
-  "_rem1_v1x": { "apiVersion": "1.0.0"},
-  "pluginVersion": "3.0.0",
+  "pluginVersion": "2.10.0726",
   "license": "EPL-2.0",
   "pluginType": "application",
   "webContent": {
@@ -10,15 +9,15 @@
     "standaloneUseFramework": true,
     "launchDefinition": {
       "pluginShortNameKey": "ejesweb",
-      "pluginShortNameDefault": "(E)JES Web App",
+      "pluginShortNameDefault": "(E)JES Web",
       "imageSrc": "assets/icon.png"
     },
     "ejesWeb": {
-      "url": "https://mvs70.phx.phoenixsoftware.com",
+      "url": "https://mvs60.phx.phoenixsoftware.com",
       "port": 59284
     },
     "descriptionKey": "(E)JES Web Zowe Desktop",
-    "descriptionDefault": "(EJES Web running under Zowe",
+    "descriptionDefault": "(E)JES Web running under Zowe",
     "startingPage": "html/index.html",
     "isSingleWindowApp": true,
     "defaultWindowStyle": {

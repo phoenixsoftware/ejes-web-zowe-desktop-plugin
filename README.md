@@ -8,6 +8,9 @@ Copyright Contributors to the Zowe Project.
 
 **Note**: *(E)JES is a registered trademark of Phoenix Software International.*
 
+# Day of Year Zowe Plug-in (UPDATED 9/10/23)
+This sample (E)JES Web plugin app was update for the 2023 Open Mainframe Summit in Las Vegas for the presentation titled Demystified: Put Your Web App on the Zowe Desktop in a Flash UPDATED. (It is included in this repository.) The orginal presentation (below) was modified into an "everything you need to know to modify a web app and install it as a Zowe iframe app" presentation.  As far as the repo is concerned, I removed a few extraneous files, updated the metadata files to 2.10 level so they match the presentation, and added the schemas directory which, starting in LTS 2.3, was required to be able to install.  Now that you have the repository cloned, you can use the **zwe components install** command to install it with no modification. That doesn't mean you won't want to personalize it. 
+
 # (E)JES Web Zowe Desktop Plug-in
 This sample app was created for the 2022 Open Mainframe Summit for the presentation titled Demystified: Put Your Web App on the Zowe Desktop in a Flash.  It was created following the instructions in the presentation to modify the v2.x Zowe Iframe Sample App, however it was
 further modified to interface with Phoenix Software International's (E)JES product and its
